@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { useFitResult } from '~/composables/useFitResult'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -47,9 +48,10 @@ const errors = reactive<FormErrors>({
   discipline: '',
 })
 
-// 'idle' | 'submitted' are the only states needed until the API is wired up.
-type PageState = 'idle' | 'submitted'
-const pageState = ref<PageState>('idle')
+const isLoading = ref(false)
+const submitError = ref('')
+
+const { result } = useFitResult()
 
 // ── Options ──────────────────────────────────────────────────────────────────
 
@@ -127,34 +129,35 @@ function validate(): boolean {
 
 // ── Submit ────────────────────────────────────────────────────────────────────
 
-function onSubmit() {
+async function onSubmit() {
   const isValid = validate()
   if (!isValid) return
 
-  // Backend not yet available — log and show placeholder state.
-  console.log('Bike fit form values:', {
-    height: values.height,
-    inseam: values.inseam,
-    armLength: values.armLength !== '' ? values.armLength : undefined,
-    shoulderWidth: values.shoulderWidth !== '' ? values.shoulderWidth : undefined,
-    discipline: values.discipline,
-  })
+  isLoading.value = true
+  submitError.value = ''
 
-  pageState.value = 'submitted'
-}
+  try {
+    const data = await $fetch('/api/fit-recommendation', {
+      method: 'POST',
+      body: {
+        height: values.height as number,
+        inseam: values.inseam as number,
+        armLength: values.armLength !== '' ? (values.armLength as number) : undefined,
+        shoulderWidth: values.shoulderWidth !== '' ? (values.shoulderWidth as number) : undefined,
+        discipline: values.discipline as string,
+      },
+    })
 
-function onReset() {
-  values.height = ''
-  values.inseam = ''
-  values.armLength = ''
-  values.shoulderWidth = ''
-  values.discipline = ''
-  errors.height = ''
-  errors.inseam = ''
-  errors.armLength = ''
-  errors.shoulderWidth = ''
-  errors.discipline = ''
-  pageState.value = 'idle'
+    result.value = data as import('~/composables/useFitResult').FitResult
+    await navigateTo('/result')
+  } catch (err: unknown) {
+    const fetchError = err as { data?: { error?: string } }
+    submitError.value =
+      fetchError?.data?.error ??
+      'Something went wrong. Please check your connection and try again.'
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // ── Input helpers ─────────────────────────────────────────────────────────────
@@ -187,42 +190,8 @@ function onDisciplineChange(value: string) {
         </p>
       </div>
 
-      <!-- Success state ─────────────────────────────────────────────────── -->
-      <BaseCard v-if="pageState === 'submitted'">
-        <div class="flex flex-col items-center gap-4 py-4 text-center">
-          <!-- Status icon -->
-          <span
-            class="flex h-12 w-12 items-center justify-center rounded-full bg-success-50 text-success-500"
-            aria-hidden="true"
-          >
-            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M5 13l4 4L19 7"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </span>
-
-          <div>
-            <p class="text-h2 text-neutral-900">
-              Form submitted
-            </p>
-            <p class="mt-1 text-body text-neutral-500">
-              Backend coming soon — your values have been logged to the console.
-            </p>
-          </div>
-
-          <BaseButton type="button" class="mt-2" @click="onReset">
-            Start over
-          </BaseButton>
-        </div>
-      </BaseCard>
-
       <!-- Form ─────────────────────────────────────────────────────────── -->
-      <BaseCard v-else>
+      <BaseCard>
         <form novalidate @submit.prevent="onSubmit">
           <div class="space-y-5">
 
@@ -292,7 +261,19 @@ function onDisciplineChange(value: string) {
 
           <!-- Submit -->
           <div class="mt-8">
-            <BaseButton type="submit">
+            <p
+              v-if="submitError"
+              role="alert"
+              class="mb-3 text-small text-danger-700"
+            >
+              {{ submitError }}
+            </p>
+
+            <BaseButton
+              type="submit"
+              :loading="isLoading"
+              :disabled="isLoading"
+            >
               Get my fit recommendation
             </BaseButton>
 
