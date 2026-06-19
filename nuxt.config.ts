@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   srcDir: 'app',
+  serverDir: './server',
 
   modules: ['@nuxt/eslint'],
 

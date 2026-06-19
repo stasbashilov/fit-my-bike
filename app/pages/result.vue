@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { useFitResult } from '~/composables/useFitResult'
 
-const { result } = useFitResult()
+definePageMeta({
+  middleware: [
+    function () {
+      const { result } = useFitResult()
+      if (!result.value) {
+        return navigateTo('/')
+      }
+    },
+  ],
+})
 
-// Redirect to the form if someone lands here without a result in state.
-if (!result.value) {
-  await navigateTo('/')
-}
+const { result } = useFitResult()
 </script>
 
 <template>
