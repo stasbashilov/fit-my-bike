@@ -1,3 +1,6 @@
+# Claude Code (agents, docs, memory — all internal)
+.claude/
+
 # Nuxt dev/build outputs
 .output
 .data

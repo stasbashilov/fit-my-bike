@@ -26,13 +26,13 @@ npm run lint
 - `tailwind.config.ts` — design tokens
 
 ## Sources of truth (read before working in these areas)
-- Bike fit formulas and coefficients by discipline → `docs/FIT-METHODOLOGY.md`
-- Code style and conventions → `docs/CODING_STANDARDS.md`
-- How to work with subagents (planner/backend-dev/frontend-dev/design-agent/code-reviewer/qa-tester/deploy-vercel) → `docs/AI_WORKFLOW.md`
-- Product scope, what's in/out of MVP → `docs/PROJECT_OVERVIEW.md`
+- Bike fit formulas and coefficients by discipline → `.claude/docs/FIT-METHODOLOGY.md`
+- Code style and conventions → `.claude/docs/CODING_STANDARDS.md`
+- How to work with subagents (planner/backend-dev/frontend-dev/design-agent/code-reviewer/qa-tester/deploy-vercel) → `.claude/docs/AI_WORKFLOW.md`
+- Product scope, what's in/out of MVP → `.claude/docs/PROJECT_OVERVIEW.md`
 
 ## Hard rules
 - Do not add DB/auth/sessions without an explicit request — the product is intentionally stateless
-- Do not invent your own bike fit coefficients — use only those from `docs/FIT-METHODOLOGY.md`; otherwise explicitly flag as an open question
+- Do not invent your own bike fit coefficients — use only those from `.claude/docs/FIT-METHODOLOGY.md`; otherwise explicitly flag as an open question
 - Design — only through tokens in `tailwind.config.ts`, no arbitrary inline values
 - Do not add Claude as a co-author in commits (`Co-Authored-By: Claude` must not appear in commit messages)
