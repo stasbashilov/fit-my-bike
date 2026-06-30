@@ -1,5 +1,6 @@
-# Claude Code (agents, docs, memory — all internal)
-.claude/
+# Claude Code — personal/generated, not shared
+.claude/settings.local.json
+.claude/memory/
 
 # Nuxt dev/build outputs
 .output
