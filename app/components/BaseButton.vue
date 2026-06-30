@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
     :type="type"
     :disabled="disabled || loading"
     :aria-busy="loading"
-    class="inline-flex w-full items-center justify-center gap-2 rounded-md bg-accent-500 px-5 py-3 text-body font-semibold text-white transition-colors hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-500/40 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+    class="inline-flex w-full items-center justify-center gap-2 rounded-md bg-accent-500 px-5 py-3 text-body font-semibold text-white transition-colors hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-500/40 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 dark:disabled:bg-neutral-700 dark:disabled:text-neutral-400"
   >
     <svg
       v-if="loading"

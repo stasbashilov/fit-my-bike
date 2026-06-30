@@ -39,7 +39,7 @@ function onChange(event: Event) {
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <label :for="selectId" class="text-label font-medium text-neutral-700">
+    <label :for="selectId" class="text-label font-medium text-neutral-700 dark:text-neutral-200">
       {{ label }}
       <span v-if="required" class="text-danger-500" aria-hidden="true">*</span>
     </label>
@@ -53,12 +53,13 @@ function onChange(event: Event) {
         :aria-describedby="hasError ? errorId : undefined"
         :class="[
           'w-full appearance-none rounded-md border bg-white px-3 py-2.5 pr-10',
+          'dark:bg-neutral-800',
           'text-body transition-colors focus:outline-none focus:ring-2 focus:ring-accent-500/40',
-          'disabled:cursor-not-allowed disabled:bg-neutral-100 disabled:text-neutral-400',
+          'disabled:cursor-not-allowed disabled:bg-neutral-100 disabled:text-neutral-400 dark:disabled:bg-neutral-700 dark:disabled:text-neutral-500',
           hasError
             ? 'border-danger-500 focus:border-danger-500'
-            : 'border-neutral-300 focus:border-accent-500',
-          modelValue === '' ? 'text-neutral-400' : 'text-neutral-900',
+            : 'border-neutral-300 focus:border-accent-500 dark:border-neutral-600 dark:focus:border-accent-400',
+          modelValue === '' ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-900 dark:text-neutral-100',
         ]"
         @change="onChange"
       >
@@ -77,7 +78,7 @@ function onChange(event: Event) {
 
       <!-- Custom dropdown chevron -->
       <span
-        class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-neutral-500"
+        class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-neutral-500 dark:text-neutral-400"
         aria-hidden="true"
       >
         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -92,7 +93,7 @@ function onChange(event: Event) {
       </span>
     </div>
 
-    <p v-if="hasError" :id="errorId" class="text-label text-danger-700">
+    <p v-if="hasError" :id="errorId" class="text-label text-danger-700 dark:text-danger-500">
       {{ error }}
     </p>
   </div>
