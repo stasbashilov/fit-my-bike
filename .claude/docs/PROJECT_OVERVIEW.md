@@ -20,10 +20,17 @@ A cyclist who wants a quick starting point for fit setup without visiting a prof
 
 ## In scope for MVP (v1)
 
+### Bike Fit Calculator (Tab 1)
 - Input form: height, inseam, arm length, shoulder width, discipline
 - Calculation: saddle height, body position recommendation (handlebar drop), handlebar width
-- A single result screen with a clear explanation of each number
+- A result screen with a clear explanation of each number
 - An explicit disclaimer: this is a starting recommendation, not a substitute for a professional fit
+
+### Tire Pressure Calculator (Tab 2)
+- Input form: rider weight, bike weight, tire width, tire type (clincher/tubeless/tubular), surface (road/gravel/MTB)
+- Calculation: optimal front and rear tire pressure in bar and psi
+- Inline result display (no separate page — calculator UX)
+- Formula source: `docs/FIT-METHODOLOGY.md` section on tire pressure
 
 ## Intentionally out of scope for MVP (do not implement without a separate decision)
 
@@ -35,8 +42,10 @@ A cyclist who wants a quick starting point for fit setup without visiting a prof
 
 ## Formula source
 
-`docs/FIT-METHODOLOGY.md` — also contains a list of model limitations to keep in mind whenever changing calculation logic.
+`docs/FIT-METHODOLOGY.md` — bike fit formulas, coefficients, and tire pressure model. Contains a list of model limitations to keep in mind whenever changing calculation logic.
 
 ## Status
 
 MVP in development. Stack: Nuxt 3 + Tailwind, deployed on Vercel, no DB.
+- Bike Fit Calculator: complete (form + result page)
+- Tire Pressure Calculator: added in v1.1 (inline result on tab 2)
