@@ -8,6 +8,15 @@
   }
 
   body {
-    @apply bg-neutral-50 dark:bg-neutral-900;
+    @apply bg-neutral-900;
+  }
+}
+
+@layer components {
+  /* Hero photo: cyclists on a scenic road, fixed behind all pages */
+  .hero-bg {
+    background-image: url('../images/hero-cycling.jpg');
+    background-size: cover;
+    background-position: center 35%;
   }
 }

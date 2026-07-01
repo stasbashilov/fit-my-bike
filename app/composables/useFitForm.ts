@@ -1,7 +1,7 @@
 import { ref, reactive } from 'vue'
 import type { Discipline } from '../../shared/schemas/fitRequest'
-import { useFitResult } from '~/composables/useFitResult'
-import type { FitResult } from '~/composables/useFitResult'
+import { useFitResultStore } from '~/stores/fitResult'
+import type { FitResult } from '~/stores/fitResult'
 
 interface FitFormValues {
   height: number | ''
@@ -39,7 +39,7 @@ export function useFitForm() {
   const loading = ref(false)
   const submitError = ref('')
 
-  const { result } = useFitResult()
+  const { setResult } = useFitResultStore()
 
   function validate(): boolean {
     let valid = true
@@ -114,7 +114,7 @@ export function useFitForm() {
         },
       })
 
-      result.value = data as FitResult
+      setResult(data as FitResult)
       await navigateTo('/result')
     } catch (err: unknown) {
       const fetchError = err as { data?: { error?: string } }
