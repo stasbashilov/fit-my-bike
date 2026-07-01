@@ -12,31 +12,33 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Single accent — calm cycling teal. Used only for the primary CTA and active/focus states.
+        // Single accent — energetic cycling orange. Used only for the primary CTA and active/focus states.
+        // Shades aren't a flat scale-up of one hue value: 300/400 are tuned brighter for legibility on
+        // dark surfaces (hero overlay, dark-mode cards) while 500/600 are tuned darker for contrast on white.
         accent: {
-          50: '#ecfeff',
-          100: '#cffafe',
-          200: '#a5f3fc',
-          300: '#67e8f9',
-          400: '#22d3ee',
-          500: '#0891b2', // base accent
-          600: '#0e7490',
-          700: '#155e75',
-          800: '#164e63',
-          900: '#083344',
+          50: '#fff4ed',
+          100: '#ffe3d1',
+          200: '#ffc59f',
+          300: '#fd9a5c',
+          400: '#fb7a35',
+          500: '#e8480a', // base accent
+          600: '#c53d05',
+          700: '#9c3005',
+          800: '#7a2504',
+          900: '#5c1c03',
         },
-        // Single neutral scale — backgrounds, borders, text. The product's main surface palette.
+        // Single neutral scale — true gray (no blue undertone), backgrounds/borders/text.
         neutral: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
+          50: '#fafafa',
+          100: '#f5f5f5',
+          200: '#e5e5e5',
+          300: '#d4d4d4',
+          400: '#a3a3a3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
         },
         // State colors — feedback only (validation, result emphasis). Not decorative.
         success: {
