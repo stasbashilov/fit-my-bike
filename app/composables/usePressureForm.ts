@@ -1,5 +1,6 @@
 import { ref, reactive } from 'vue'
 import type { Surface, TireType } from '../../shared/schemas/tirePressureRequest'
+import { useTirePressureResultStore } from '~/stores/tirePressureResult'
 
 export interface TirePressureResult {
   frontBar: number
@@ -47,7 +48,7 @@ export function usePressureForm() {
 
   const loading = ref(false)
   const submitError = ref('')
-  const result = ref<TirePressureResult | null>(null)
+  const { setResult, clear } = useTirePressureResultStore()
 
   const tireWidthUnit = ref<'mm' | 'in'>('mm')
   const tireWidthInches = ref<number | ''>('')
@@ -140,7 +141,7 @@ export function usePressureForm() {
 
     loading.value = true
     submitError.value = ''
-    result.value = null
+    clear()
 
     try {
       const tireWidthMm = tireWidthUnit.value === 'mm'
@@ -157,7 +158,8 @@ export function usePressureForm() {
           surface: values.surface as string,
         },
       })
-      result.value = data as TirePressureResult
+      setResult({ ...(data as TirePressureResult), tireWidthMm })
+      await navigateTo('/pressure-result')
     } catch (err: unknown) {
       const fetchError = err as { data?: { error?: string } }
       submitError.value =
@@ -179,7 +181,6 @@ export function usePressureForm() {
     errors,
     loading,
     submitError,
-    result,
     tireWidthUnit,
     tireWidthInches,
     onTireWidthUnitChange,

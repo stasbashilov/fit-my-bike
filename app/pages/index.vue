@@ -21,7 +21,6 @@ const {
   errors: pressureErrors,
   loading: pressureLoading,
   submitError: pressureSubmitError,
-  result: pressureResult,
   tireWidthUnit,
   tireWidthInches,
   onTireWidthUnitChange,
@@ -33,21 +32,21 @@ const {
 </script>
 
 <template>
-  <main class="min-h-screen bg-neutral-50 px-4 py-10 sm:py-16 dark:bg-neutral-900">
+  <main class="min-h-screen px-4 py-10 sm:py-16">
     <div class="mx-auto max-w-form">
 
       <!-- Page heading -->
       <div class="mb-8 text-center">
-        <h1 class="text-h1 text-neutral-900 dark:text-neutral-50">
+        <h1 class="text-h1 text-white drop-shadow-sm">
           Bike Calculator
         </h1>
-        <p class="mt-2 text-body text-neutral-500 dark:text-neutral-400">
+        <p class="mt-2 text-body text-neutral-200">
           Personalised recommendations from your measurements.
         </p>
       </div>
 
       <!-- Tabs ────────────────────────────────────────────────────────────── -->
-      <div class="mb-6 flex rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-800">
+      <div class="mb-6 flex rounded-lg border border-white/40 bg-white/90 p-1 shadow-lg shadow-neutral-900/10 backdrop-blur-md dark:border-neutral-700/60 dark:bg-neutral-800/90">
         <button
           type="button"
           class="flex-1 rounded-md py-2 text-small font-medium transition-colors"
@@ -111,7 +110,7 @@ const {
                   <div class="w-full border-t border-neutral-200 dark:border-neutral-700" />
                 </div>
                 <div class="relative flex justify-center">
-                  <span class="bg-white px-3 text-small text-neutral-400 dark:bg-neutral-800 dark:text-neutral-500">
+                  <span class="bg-white/90 px-3 text-small text-neutral-400 dark:bg-neutral-800/90 dark:text-neutral-500">
                     Optional (improves accuracy)
                   </span>
                 </div>
@@ -275,62 +274,6 @@ const {
             </div>
           </form>
         </BaseCard>
-
-        <!-- Inline result ──────────────────────────────────────────────────── -->
-        <div v-if="pressureResult" class="mt-6">
-          <BaseCard>
-            <!-- Header -->
-            <div class="mb-5 border-b border-neutral-100 pb-4 dark:border-neutral-700">
-              <p class="text-small text-neutral-400 dark:text-neutral-500">
-                {{ pressureResult.surfaceLabel }} · {{ pressureResult.tireTypeLabel }} ·
-                <template v-if="tireWidthUnit === 'in'">
-                  {{ tireWidthInches }}" ({{ Math.round((tireWidthInches as number) * 25.4) }} mm)
-                </template>
-                <template v-else>
-                  {{ pressureValues.tireWidthMm }} mm
-                </template>
-              </p>
-              <h2 class="text-h2 text-neutral-900 dark:text-neutral-50">
-                Recommended Pressure
-              </h2>
-            </div>
-
-            <!-- Front / Rear grid -->
-            <div class="grid grid-cols-2 gap-4">
-              <div class="rounded-lg bg-neutral-50 px-4 py-5 text-center dark:bg-neutral-700">
-                <p class="text-small text-neutral-400">Front</p>
-                <p class="mt-1 text-h1 text-accent-600 dark:text-accent-400">
-                  {{ pressureResult.frontBar }}<span class="ml-1 text-h2 font-normal">bar</span>
-                </p>
-                <p class="mt-0.5 text-small text-neutral-500 dark:text-neutral-300">{{ pressureResult.frontPsi }} psi</p>
-              </div>
-              <div class="rounded-lg bg-neutral-50 px-4 py-5 text-center dark:bg-neutral-700">
-                <p class="text-small text-neutral-400">Rear</p>
-                <p class="mt-1 text-h1 text-accent-600 dark:text-accent-400">
-                  {{ pressureResult.rearBar }}<span class="ml-1 text-h2 font-normal">bar</span>
-                </p>
-                <p class="mt-0.5 text-small text-neutral-500 dark:text-neutral-300">{{ pressureResult.rearPsi }} psi</p>
-              </div>
-            </div>
-
-            <!-- Note -->
-            <p class="mt-5 text-small text-neutral-600 dark:text-neutral-300">
-              {{ pressureResult.note }}
-            </p>
-
-            <!-- Limitations -->
-            <ul class="mt-4 space-y-1">
-              <li
-                v-for="limitation in pressureResult.limitations"
-                :key="limitation"
-                class="flex items-start gap-2 text-small text-neutral-400 dark:text-neutral-500"
-              >
-                <span class="mt-0.5 text-neutral-300 dark:text-neutral-600" aria-hidden="true">•</span>
-                {{ limitation }}
-              </li>
-            </ul>
-          </BaseCard>
-        </div>
       </div>
 
     </div>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useFitResult } from '~/composables/useFitResult'
+import { useFitResultStore } from '~/stores/fitResult'
 
 definePageMeta({
   middleware: [
     function () {
-      const { result } = useFitResult()
+      const { result } = useFitResultStore()
       if (!result.value) {
         return navigateTo('/')
       }
@@ -12,18 +12,18 @@ definePageMeta({
   ],
 })
 
-const { result } = useFitResult()
+const { result } = useFitResultStore()
 </script>
 
 <template>
-  <main class="min-h-screen bg-neutral-50 px-4 py-10 sm:py-16 dark:bg-neutral-900">
+  <main class="min-h-screen px-4 py-10 sm:py-16">
     <div class="mx-auto max-w-form">
 
       <!-- Back link -->
       <div class="mb-6">
         <NuxtLink
           to="/"
-          class="text-small text-accent-600 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-accent-500/40 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 rounded-md dark:text-accent-400"
+          class="text-small text-accent-300 underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-accent-500/40 focus:ring-offset-2 rounded-md"
         >
           &larr; Back to form
         </NuxtLink>
@@ -31,10 +31,10 @@ const { result } = useFitResult()
 
       <!-- Page heading -->
       <div class="mb-8 text-center">
-        <h1 class="text-h1 text-neutral-900 dark:text-neutral-50">
+        <h1 class="text-h1 text-white drop-shadow-sm">
           Your Fit Recommendation
         </h1>
-        <p class="mt-2 text-body text-neutral-500 dark:text-neutral-400">
+        <p class="mt-2 text-body text-neutral-200">
           For {{ result?.disciplineLabel }}
         </p>
       </div>
