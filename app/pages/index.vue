@@ -1,353 +1,35 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useFitResult } from '~/composables/useFitResult'
-
-// ── Tabs ─────────────────────────────────────────────────────────────────────
+import { ref } from 'vue'
+import { useFitForm } from '~/composables/useFitForm'
+import { usePressureForm } from '~/composables/usePressureForm'
+import { disciplineOptions, surfaceOptions, tireTypeOptions } from '~/constants/options'
 
 type Tab = 'fit' | 'pressure'
 const activeTab = ref<Tab>('fit')
 
-// ── Types ────────────────────────────────────────────────────────────────────
+const {
+  values: fitValues,
+  errors: fitErrors,
+  loading: fitLoading,
+  submitError: fitSubmitError,
+  onSubmit: onFitSubmit,
+  onNumber: onFitNumber,
+} = useFitForm()
 
-type Discipline = 'road' | 'tt_triathlon' | 'mtb_xc' | 'gravel' | 'cyclocross' | 'touring' | 'kids' | ''
-type Surface = 'road' | 'gravel' | 'mtb' | ''
-type TireType = 'clincher' | 'tubeless' | 'tubular' | ''
-
-interface FitFormValues {
-  height: number | ''
-  inseam: number | ''
-  armLength: number | ''
-  shoulderWidth: number | ''
-  discipline: Discipline
-}
-
-interface FitFormErrors {
-  height: string
-  inseam: string
-  armLength: string
-  shoulderWidth: string
-  discipline: string
-}
-
-interface PressureFormValues {
-  riderWeight: number | ''
-  bikeWeight: number | ''
-  tireWidthMm: number | ''
-  tireType: TireType
-  surface: Surface
-}
-
-interface PressureFormErrors {
-  riderWeight: string
-  bikeWeight: string
-  tireWidthMm: string
-  tireType: string
-  surface: string
-}
-
-interface TirePressureResult {
-  frontBar: number
-  rearBar: number
-  frontPsi: number
-  rearPsi: number
-  surfaceLabel: string
-  tireTypeLabel: string
-  note: string
-  limitations: string[]
-}
-
-// ── Fit form state ────────────────────────────────────────────────────────────
-
-const fitValues = reactive<FitFormValues>({
-  height: '',
-  inseam: '',
-  armLength: '',
-  shoulderWidth: '',
-  discipline: '',
-})
-
-const fitErrors = reactive<FitFormErrors>({
-  height: '',
-  inseam: '',
-  armLength: '',
-  shoulderWidth: '',
-  discipline: '',
-})
-
-const fitLoading = ref(false)
-const fitSubmitError = ref('')
-
-const { result: fitResult } = useFitResult()
-
-// ── Pressure form state ───────────────────────────────────────────────────────
-
-const pressureValues = reactive<PressureFormValues>({
-  riderWeight: '',
-  bikeWeight: '',
-  tireWidthMm: '',
-  tireType: '',
-  surface: '',
-})
-
-const tireWidthUnit = ref<'mm' | 'in'>('mm')
-const tireWidthInches = ref<number | ''>('')
-
-function onTireWidthUnitChange(unit: 'mm' | 'in') {
-  tireWidthUnit.value = unit
-  pressureValues.tireWidthMm = ''
-  tireWidthInches.value = ''
-  pressureErrors.tireWidthMm = ''
-}
-
-function onTireWidthMmInput(event: Event) {
-  const target = event.target as unknown as { value: string; valueAsNumber: number }
-  onPressureNumber('tireWidthMm', target.value === '' ? '' : target.valueAsNumber)
-}
-
-function onTireWidthInchesInput(event: Event) {
-  const target = event.target as unknown as { value: string; valueAsNumber: number }
-  tireWidthInches.value = target.value === '' ? '' : target.valueAsNumber
-}
-
-const pressureErrors = reactive<PressureFormErrors>({
-  riderWeight: '',
-  bikeWeight: '',
-  tireWidthMm: '',
-  tireType: '',
-  surface: '',
-})
-
-const pressureLoading = ref(false)
-const pressureSubmitError = ref('')
-const pressureResult = ref<TirePressureResult | null>(null)
-
-// ── Options ──────────────────────────────────────────────────────────────────
-
-const disciplineOptions = [
-  { value: 'road', label: 'Road (racing)' },
-  { value: 'tt_triathlon', label: 'Time Trial / Triathlon' },
-  { value: 'mtb_xc', label: 'MTB Cross-Country' },
-  { value: 'gravel', label: 'Gravel' },
-  { value: 'cyclocross', label: 'Cyclocross' },
-  { value: 'touring', label: 'Touring' },
-  { value: 'kids', label: 'Kids' },
-]
-
-const surfaceOptions = [
-  { value: 'road', label: 'Road' },
-  { value: 'gravel', label: 'Gravel' },
-  { value: 'mtb', label: 'MTB (off-road)' },
-]
-
-const tireTypeOptions = [
-  { value: 'clincher', label: 'Clincher (with inner tube)' },
-  { value: 'tubeless', label: 'Tubeless' },
-  { value: 'tubular', label: 'Tubular (sew-up)' },
-]
-
-// ── Fit validation ────────────────────────────────────────────────────────────
-
-function validateFit(): boolean {
-  let valid = true
-
-  if (fitValues.height === '' || fitValues.height === null) {
-    fitErrors.height = 'Height is required.'
-    valid = false
-  } else if (fitValues.height < 1200 || fitValues.height > 2200) {
-    fitErrors.height = 'Height must be between 1200 and 2200 mm.'
-    valid = false
-  } else {
-    fitErrors.height = ''
-  }
-
-  if (fitValues.inseam === '' || fitValues.inseam === null) {
-    fitErrors.inseam = 'Inseam is required.'
-    valid = false
-  } else if (fitValues.inseam < 500 || fitValues.inseam > 1200) {
-    fitErrors.inseam = 'Inseam must be between 500 and 1200 mm.'
-    valid = false
-  } else {
-    fitErrors.inseam = ''
-  }
-
-  if (fitValues.armLength !== '' && fitValues.armLength !== null) {
-    if (fitValues.armLength < 400 || fitValues.armLength > 900) {
-      fitErrors.armLength = 'Arm length must be between 400 and 900 mm.'
-      valid = false
-    } else {
-      fitErrors.armLength = ''
-    }
-  } else {
-    fitErrors.armLength = ''
-  }
-
-  if (fitValues.shoulderWidth !== '' && fitValues.shoulderWidth !== null) {
-    if (fitValues.shoulderWidth < 300 || fitValues.shoulderWidth > 600) {
-      fitErrors.shoulderWidth = 'Shoulder width must be between 300 and 600 mm.'
-      valid = false
-    } else {
-      fitErrors.shoulderWidth = ''
-    }
-  } else {
-    fitErrors.shoulderWidth = ''
-  }
-
-  if (!fitValues.discipline) {
-    fitErrors.discipline = 'Please select a discipline.'
-    valid = false
-  } else {
-    fitErrors.discipline = ''
-  }
-
-  return valid
-}
-
-// ── Pressure validation ───────────────────────────────────────────────────────
-
-function validatePressure(): boolean {
-  let valid = true
-
-  if (pressureValues.riderWeight === '' || pressureValues.riderWeight === null) {
-    pressureErrors.riderWeight = 'Rider weight is required.'
-    valid = false
-  } else if (pressureValues.riderWeight < 20 || pressureValues.riderWeight > 200) {
-    pressureErrors.riderWeight = 'Rider weight must be between 20 and 200 kg.'
-    valid = false
-  } else {
-    pressureErrors.riderWeight = ''
-  }
-
-  if (pressureValues.bikeWeight !== '' && pressureValues.bikeWeight !== null) {
-    if (pressureValues.bikeWeight < 3 || pressureValues.bikeWeight > 30) {
-      pressureErrors.bikeWeight = 'Bike weight must be between 3 and 30 kg.'
-      valid = false
-    } else {
-      pressureErrors.bikeWeight = ''
-    }
-  } else {
-    pressureErrors.bikeWeight = ''
-  }
-
-  if (tireWidthUnit.value === 'mm') {
-    if (pressureValues.tireWidthMm === '' || pressureValues.tireWidthMm === null) {
-      pressureErrors.tireWidthMm = 'Tire width is required.'
-      valid = false
-    } else if (pressureValues.tireWidthMm < 18 || pressureValues.tireWidthMm > 80) {
-      pressureErrors.tireWidthMm = 'Tire width must be between 18 and 80 mm.'
-      valid = false
-    } else {
-      pressureErrors.tireWidthMm = ''
-    }
-  } else {
-    if (tireWidthInches.value === '' || tireWidthInches.value === null) {
-      pressureErrors.tireWidthMm = 'Tire width is required.'
-      valid = false
-    } else {
-      const mm = Math.round((tireWidthInches.value as number) * 25.4)
-      if (mm < 18 || mm > 80) {
-        pressureErrors.tireWidthMm = 'Tire width must be between 0.71" and 3.15" (18–80 mm).'
-        valid = false
-      } else {
-        pressureErrors.tireWidthMm = ''
-      }
-    }
-  }
-
-  if (!pressureValues.tireType) {
-    pressureErrors.tireType = 'Please select a tire type.'
-    valid = false
-  } else {
-    pressureErrors.tireType = ''
-  }
-
-  if (!pressureValues.surface) {
-    pressureErrors.surface = 'Please select a surface.'
-    valid = false
-  } else {
-    pressureErrors.surface = ''
-  }
-
-  return valid
-}
-
-// ── Submit handlers ───────────────────────────────────────────────────────────
-
-async function onFitSubmit() {
-  if (!validateFit()) return
-
-  fitLoading.value = true
-  fitSubmitError.value = ''
-
-  try {
-    const data = await $fetch('/api/fit-recommendation', {
-      method: 'POST',
-      body: {
-        height: fitValues.height as number,
-        inseam: fitValues.inseam as number,
-        armLength: fitValues.armLength !== '' ? (fitValues.armLength as number) : undefined,
-        shoulderWidth: fitValues.shoulderWidth !== '' ? (fitValues.shoulderWidth as number) : undefined,
-        discipline: fitValues.discipline as string,
-      },
-    })
-
-    fitResult.value = data as import('~/composables/useFitResult').FitResult
-    await navigateTo('/result')
-  } catch (err: unknown) {
-    const fetchError = err as { data?: { error?: string } }
-    fitSubmitError.value =
-      fetchError?.data?.error ?? 'Something went wrong. Please check your connection and try again.'
-  } finally {
-    fitLoading.value = false
-  }
-}
-
-async function onPressureSubmit() {
-  if (!validatePressure()) return
-
-  pressureLoading.value = true
-  pressureSubmitError.value = ''
-  pressureResult.value = null
-
-  try {
-    const tireWidthMm = tireWidthUnit.value === 'mm'
-      ? pressureValues.tireWidthMm as number
-      : Math.round((tireWidthInches.value as number) * 25.4)
-
-    const data = await $fetch('/api/tire-pressure', {
-      method: 'POST',
-      body: {
-        riderWeight: pressureValues.riderWeight as number,
-        bikeWeight: pressureValues.bikeWeight !== '' ? (pressureValues.bikeWeight as number) : undefined,
-        tireWidthMm,
-        tireType: pressureValues.tireType as string,
-        surface: pressureValues.surface as string,
-      },
-    })
-    pressureResult.value = data as TirePressureResult
-  } catch (err: unknown) {
-    const fetchError = err as { data?: { error?: string } }
-    pressureSubmitError.value =
-      fetchError?.data?.error ?? 'Something went wrong. Please check your connection and try again.'
-  } finally {
-    pressureLoading.value = false
-  }
-}
-
-// ── Input helpers ─────────────────────────────────────────────────────────────
-
-function onFitNumber(
-  field: keyof Pick<FitFormValues, 'height' | 'inseam' | 'armLength' | 'shoulderWidth'>,
-  value: string | number,
-) {
-  fitValues[field] = value === '' || value === null ? '' : (value as number)
-}
-
-function onPressureNumber(
-  field: keyof Pick<PressureFormValues, 'riderWeight' | 'bikeWeight' | 'tireWidthMm'>,
-  value: string | number,
-) {
-  pressureValues[field] = value === '' || value === null ? '' : (value as number)
-}
+const {
+  values: pressureValues,
+  errors: pressureErrors,
+  loading: pressureLoading,
+  submitError: pressureSubmitError,
+  result: pressureResult,
+  tireWidthUnit,
+  tireWidthInches,
+  onTireWidthUnitChange,
+  onTireWidthMmInput,
+  onTireWidthInchesInput,
+  onSubmit: onPressureSubmit,
+  onNumber: onPressureNumber,
+} = usePressureForm()
 </script>
 
 <template>
@@ -421,7 +103,7 @@ function onPressureNumber(
                 :model-value="fitValues.discipline"
                 :options="disciplineOptions"
                 :error="fitErrors.discipline"
-                @update:model-value="fitValues.discipline = $event as Discipline"
+                @update:model-value="fitValues.discipline = $event as typeof fitValues.discipline"
               />
 
               <div class="relative py-1">
@@ -567,7 +249,7 @@ function onPressureNumber(
                 :model-value="pressureValues.tireType"
                 :options="tireTypeOptions"
                 :error="pressureErrors.tireType"
-                @update:model-value="pressureValues.tireType = $event as TireType"
+                @update:model-value="pressureValues.tireType = $event as typeof pressureValues.tireType"
               />
 
               <BaseSelect
@@ -577,7 +259,7 @@ function onPressureNumber(
                 :model-value="pressureValues.surface"
                 :options="surfaceOptions"
                 :error="pressureErrors.surface"
-                @update:model-value="pressureValues.surface = $event as Surface"
+                @update:model-value="pressureValues.surface = $event as typeof pressureValues.surface"
               />
 
             </div>
@@ -616,14 +298,14 @@ function onPressureNumber(
             <!-- Front / Rear grid -->
             <div class="grid grid-cols-2 gap-4">
               <div class="rounded-lg bg-neutral-50 px-4 py-5 text-center dark:bg-neutral-700">
-                <p class="text-small text-neutral-400 dark:text-neutral-400">Front</p>
+                <p class="text-small text-neutral-400">Front</p>
                 <p class="mt-1 text-h1 text-accent-600 dark:text-accent-400">
                   {{ pressureResult.frontBar }}<span class="ml-1 text-h2 font-normal">bar</span>
                 </p>
                 <p class="mt-0.5 text-small text-neutral-500 dark:text-neutral-300">{{ pressureResult.frontPsi }} psi</p>
               </div>
               <div class="rounded-lg bg-neutral-50 px-4 py-5 text-center dark:bg-neutral-700">
-                <p class="text-small text-neutral-400 dark:text-neutral-400">Rear</p>
+                <p class="text-small text-neutral-400">Rear</p>
                 <p class="mt-1 text-h1 text-accent-600 dark:text-accent-400">
                   {{ pressureResult.rearBar }}<span class="ml-1 text-h2 font-normal">bar</span>
                 </p>
